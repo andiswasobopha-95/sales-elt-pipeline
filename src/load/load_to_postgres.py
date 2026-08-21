@@ -9,7 +9,7 @@ reproducible for testing and demos.
 import json
 import os
 import random
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from faker import Faker
@@ -68,7 +68,7 @@ def generate_and_load_orders(cur, product_ids: list[int]) -> None:
     Faker.seed(SEED)
     random.seed(SEED)
 
-    today = date.today()
+    today = datetime.now(tz=timezone.utc).date()
     order_id = 1
     for _ in range(ORDER_COUNT):
         customer_id = random.randint(1000, 1999)
@@ -114,8 +114,7 @@ def run() -> None:
 
     conn = get_connection()
     try:
-        with conn:
-            with conn.cursor() as cur:
+        with conn,conn.cursor() as cur:
                 # Clear transactional tables for idempotent re-runs; products upsert instead.
                 cur.execute("TRUNCATE raw.order_items, raw.orders RESTART IDENTITY CASCADE;")
                 upsert_products(cur, products)
