@@ -1,3 +1,5 @@
+[![CI](https://github.com/andiswasobopha-95/sales-elt-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/andiswasobopha-95/sales-elt-pipeline/actions/workflows/ci.yml)
+
 # Sales Analytics ELT Pipeline
 
 A production-style ELT pipeline that extracts product catalog data from a public
