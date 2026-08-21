@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: sales_user
+          POSTGRES_PASSWORD: sales_pass
+          POSTGRES_DB: sales_dw
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U sales_user"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check src/ tests/ dags/
+
+      - name: Run unit tests
+        run: pytest tests/ -v
+
+      - name: Apply raw schema
+        env:
+          PGPASSWORD: sales_pass
+        run: psql -h localhost -p 5433 -U sales_user -d sales_dw -f sql/create_tables.sql
+
+      - name: dbt debug + compile
+        env:
+          APP_DB_HOST: localhost
+          APP_DB_PORT: 5433
+          APP_DB_USER: sales_user
+          APP_DB_PASSWORD: sales_pass
+          APP_DB_NAME: sales_dw
+        run: |
+          cd dbt_project
+          dbt debug --profiles-dir .
+          dbt compile --profiles-dir .

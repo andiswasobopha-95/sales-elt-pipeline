@@ -1,0 +1,14 @@
+# dbt connection profile. Reads from the same env vars used by the load script,
+# so local (`make dbt-run`) and Airflow runs both work without edits.
+sales_elt_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('APP_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('APP_DB_PORT', '5433') | as_number }}"
+      user: "{{ env_var('APP_DB_USER', 'sales_user') }}"
+      pass: "{{ env_var('APP_DB_PASSWORD', 'sales_pass') }}"
+      dbname: "{{ env_var('APP_DB_NAME', 'sales_dw') }}"
+      schema: public
+      threads: 4

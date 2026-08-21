@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: Product dimension — one row per product.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_dates
+    description: Calendar date dimension spanning the order date range.
+    columns:
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_orders
+    description: Order-grain fact table, one row per order.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: order_total
+        tests:
+          - not_null
+
+  - name: fct_order_items
+    description: Line-item grain fact table — the primary table for analytics queries.
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+      - name: line_amount
+        tests:
+          - not_null

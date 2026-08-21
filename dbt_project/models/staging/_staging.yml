@@ -1,0 +1,53 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: products
+      - name: orders
+      - name: order_items
+
+models:
+  - name: stg_products
+    description: Cleaned, typed view over raw product catalog data.
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: unit_price
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: Cleaned, typed view over raw orders.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: order_status
+        tests:
+          - accepted_values:
+              values: ['completed', 'pending', 'cancelled']
+
+  - name: stg_order_items
+    description: Cleaned, typed view over raw order line items.
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
