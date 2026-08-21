@@ -6,7 +6,7 @@ extract_products  ->  load_to_postgres  ->  dbt_run  ->  dbt_test
 Runs daily. Each task is a thin wrapper around the same scripts you can
 run locally (see Makefile), so local runs and Airflow runs stay in sync.
 """
-   from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
