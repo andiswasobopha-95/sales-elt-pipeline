@@ -9,7 +9,7 @@ reproducible for testing and demos.
 import json
 import os
 import random
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from faker import Faker
